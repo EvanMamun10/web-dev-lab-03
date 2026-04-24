@@ -1,12 +1,15 @@
+import os
+
 import google.generativeai as genai
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
 
 st.title("Coach Chatbot")
 st.write("Ask this sports-focused chatbot about training, strategy, and game preparation.")
 
-# TODO: Paste your Gemini API key below.
-# Example: GEMINI_API_KEY = "your_api_key_here"
-GEMINI_API_KEY = "AIzaSyAgJ_xdTmfqGpv07Kdid1UYgb9oTKo7wnI"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = [
@@ -32,7 +35,7 @@ if user_prompt:
     else:
         try:
             genai.configure(api_key=GEMINI_API_KEY.strip())
-            model = genai.GenerativeModel("gemini-1.5-flash")
+            model = genai.GenerativeModel("gemini-2.5-flash")
 
             history_text = ""
             for msg in st.session_state.chat_messages[:-1]:
@@ -53,11 +56,9 @@ if user_prompt:
             with st.chat_message("assistant"):
                 st.write(bot_reply)
 
-        except Exception:
-            fallback = (
-                "I ran into an API issue (possibly rate limit or safety block). "
-                "Please try again in a few seconds."
-            )
+        except Exception as e:
+            fallback = f"Gemini error: {type(e).__name__}: {e}"
             st.session_state.chat_messages.append({"role": "assistant", "content": fallback})
             with st.chat_message("assistant"):
                 st.error(fallback)
+                st.exception(e)

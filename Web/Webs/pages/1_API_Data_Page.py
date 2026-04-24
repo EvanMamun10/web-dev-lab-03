@@ -1,12 +1,15 @@
+import os
+
 import requests
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
 
 st.title("Sports Weather Dashboard")
 st.write("Use current weather conditions to plan practice or game-day activity.")
 
-# TODO: Paste your OpenWeather API key below.
-# Example: OPENWEATHER_API_KEY = "your_api_key_here"
-OPENWEATHER_API_KEY = "AIzaSyAgJ_xdTmfqGpv07Kdid1UYgb9oTKo7wnI"
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 
 city = st.text_input("Enter a city", value="Atlanta")
 unit_choice = st.selectbox("Temperature unit", ["Fahrenheit", "Celsius"])
